@@ -1,14 +1,16 @@
 import sqlite3
+import os
 """Nosso banco de dados que vai criar o arquivo navegador.py, permite também comandos para salvar nossas paginas, links e historico, pra persistirem os dados"""
 
 class GerenciadorBD:
-    """Gerencia o uso do sqlite, todas as paginas e links internos"""
+    def __init__(self):
+        # pasta do projeto (um nível acima do arquivo atual)
+        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        db_path = os.path.join(base_dir, "navegador.bd")
 
-    def __init__(self, nome_banco="navegador.bd"):
-        """inicia o programa e cria as tabelas"""
-        self.conn = sqlite3.connect(nome_banco)          #   abre ou cria o banco
-        self.conn.row_factory = sqlite3.Row              #   faz com que as consultas retorrnem dict (cada linha vira um dict)
-        self._criar_tabelas()                            #   garante que as tabelas existam
+        self.conn = sqlite3.connect(db_path)
+        self.conn.row_factory = sqlite3.Row
+        self._criar_tabelas()
 
     def _criar_tabelas(self):
         """Func que vai criar as tabelas de pag, usuarios e links internos"""
