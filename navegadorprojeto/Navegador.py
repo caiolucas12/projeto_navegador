@@ -194,32 +194,33 @@ class Navegador:
             input('Pressione ENTER para continuar.....')
 
     def acessar_url_interno(self, caminho):
-        if not self.home: #so funciona se estiver num site ja
+        if not self.home:
             print('Abra uma página primeiro para usar links internos.')
             input("ENTER...")
             return
 
-        pagina_atual = self.paginas.get(self.home) #esse paginas é onde estão armazenadas as urls
+        caminho_limpo = caminho.strip().lstrip('/')
+        nova_url = self.home.rstrip('/') + '/' + caminho_limpo
 
-        if not pagina_atual:
-            print("Página atual não carregada no cache.")
-            input("ENTER...")
-            return
+        # página atual
+        pagina_atual = self.paginas.get(self.home)
 
-        if not pagina_atual.tem_link(caminho):
-            print("Link não cadastrado nesta página.")
-            input("ENTER...")
-            return
+        # se a página atual existir, registra o link interno (se ainda não existir)
+        if pagina_atual:
+            link_formatado = '/' + caminho_limpo
+            if link_formatado not in pagina_atual.link_interno:
+                pagina_atual.link_interno.append(link_formatado)
+                self.bd.adicionar_link(self.home, link_formatado)
 
-        nova_url = self.home + caminho
-
+        # cria a nova página se não existir
         if nova_url not in self.paginas:
             print(f'Página "{nova_url}" não existe. Criando...')
             self.bd.adicionar_pagina(nova_url)
             self.paginas[nova_url] = Pagina(nova_url, link_interno=[])
 
-        self.historico.adicionar(self.home) #adiciona no historico
-        self.home = nova_url #muda a home
+        # histórico e navegação
+        self.historico.adicionar(self.home)
+        self.home = nova_url
 
 
     def acessar_por_indice(self, escolha_usuario):
