@@ -5,14 +5,14 @@ class Pagina:
         self.link_interno = link_interno or []
 
     def mostrar_links(self):
-        '''mostra os links internos disponiveis'''
+        '''mostra os links internos com caminho completo'''
         if not self.link_interno:
             print('nenhum link disponivel')
             return
-        else:
-            print('Links disponíveis:')
-            for i, link in enumerate(self.link_interno, 1):
-                print(f"  [{i}] {link}")
+
+        print('Links disponíveis:')
+        for i, link in enumerate(self.link_interno, 1):
+            print(f"  [{i}] {link}")
 
     def tem_link(self, caminho):
         '''normaliza removendo espaços e a / inicial para comparação'''

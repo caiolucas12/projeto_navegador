@@ -17,6 +17,11 @@ class Navegador:
         self.home = None
         self._carregar_paginas_do_bd()
 
+    def normalizar_url(self, base, caminho):
+        if caminho.startswith('/'):
+            caminho = caminho.lstrip('/')
+        return f"{base.rstrip('/')}/{caminho}"
+
 
     def _carregar_paginas_do_bd(self):
         """Lê tabelas paginas e links_internos e preenche self.paginas."""
@@ -130,12 +135,15 @@ class Navegador:
                 return
 
             url_principal = partes[1]
-            link = partes[2]
+            link = self.normalizar_url(url_principal, partes[2])
             if not self.bd.existe_pagina(url_principal):
                 print('A página principal não existe.')
                 input('ENTER....')
                 return
-
+            if link == url_principal:
+                print('Uma página não pode apontar para ela mesma.')
+                input('ENTER...')
+                return
             self.bd.adicionar_link(url_principal, link)
             self.paginas[url_principal].link_interno.append(link)
             print(f'Link "{link}" adicionado à página "{url_principal}".')
@@ -195,75 +203,52 @@ class Navegador:
 
     def acessar_url_interno(self, caminho):
         if not self.home:
-            print('Abra uma página primeiro para usar links internos.')
+            print('Abra uma página primeiro.')
             input("ENTER...")
             return
 
-        caminho_limpo = caminho.strip().lstrip('/')
-        nova_url = self.home.rstrip('/') + '/' + caminho_limpo
+        nova_url = self.normalizar_url(self.home, caminho)
 
-        # página atual
-        pagina_atual = self.paginas.get(self.home)
+        pagina_atual = self.paginas[self.home]
 
-        # se a página atual existir, registra o link interno (se ainda não existir)
-        if pagina_atual:
-            link_formatado = '/' + caminho_limpo
-            if link_formatado not in pagina_atual.link_interno:
-                pagina_atual.link_interno.append(link_formatado)
-                self.bd.adicionar_link(self.home, link_formatado)
+        # evita duplicação
+        if nova_url not in pagina_atual.link_interno:
+            pagina_atual.link_interno.append(nova_url)
+            self.bd.adicionar_link(self.home, nova_url)
 
-        # cria a nova página se não existir
         if nova_url not in self.paginas:
-            print(f'Página "{nova_url}" não existe. Criando...')
             self.bd.adicionar_pagina(nova_url)
-            self.paginas[nova_url] = Pagina(nova_url, link_interno=[])
+            self.paginas[nova_url] = Pagina(nova_url, [])
 
-        # histórico e navegação
         self.historico.adicionar(self.home)
         self.home = nova_url
 
 
+
     def acessar_por_indice(self, escolha_usuario):
         if not self.home:
-            print('Abra uma página primeiro para usar links internos.')
+            print('Abra uma página primeiro.')
             return
 
-        pagina_atual = self.paginas.get(self.home)
-        if not pagina_atual or not pagina_atual.link_interno:
-            print('Nenhum link interno disponível nesta página.')
-            input("ENTER Para continuar...")
-            return
+        pagina_atual = self.paginas[self.home]
 
         try:
             indice = int(escolha_usuario) - 1
         except ValueError:
-            print('Entrada inválida. Digite um número correspondente a um link.')
-            input("ENTER Para continuar...")
             return
 
         if indice < 0 or indice >= len(pagina_atual.link_interno):
-            print('Esse número não aponta para nenhum link existente.')
-            input("ENTER Para continuar...")
             return
 
-        link_selecionado = pagina_atual.link_interno[indice]
-        if link_selecionado.startswith('/'):
-            proxima_url = self.home + link_selecionado
-        else:
-            proxima_url = link_selecionado
+        proxima_url = pagina_atual.link_interno[indice]
 
         if proxima_url not in self.paginas:
-            print(f'Página "{proxima_url}" não existe. Criando....')
             self.bd.adicionar_pagina(proxima_url)
-            self.paginas[proxima_url] = Pagina(proxima_url, link_interno=[])
+            self.paginas[proxima_url] = Pagina(proxima_url, [])
 
-
-        # adiciona a pagina atual ao historico antes de navegar
         self.historico.adicionar(self.home)
         self.home = proxima_url
 
-        print(f'Indo para {proxima_url} ... ')
-        self.paginas[proxima_url].mostrar_links()
 
 
     def loop(self):

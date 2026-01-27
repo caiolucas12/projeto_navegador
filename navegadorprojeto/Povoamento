@@ -1,32 +1,45 @@
 from Banco_de_dados import GerenciadorBD
 
-def povoar():
-    bd = GerenciadorBD()
+bd = GerenciadorBD()
 
-    estrutura = {
-        "home": ["login", "produtos", "sobre"],
-        "login": ["recuperar-senha"],
-        "recuperar-senha": ["login"],
-        "produtos": ["produtos/pc", "produtos/notebook"],
-        "produtos/pc": ["produtos/pc/gamer", "produtos/pc/office"],
-        "produtos/pc/gamer": ["produtos"],
-        "produtos/pc/office": [],
-        "produtos/notebook": [],
-        "sobre": ["home"]
-    }
+paginas = [
+    "home",
+    "home/produtos",
+    "home/produtos/pc",
+    "home/produtos/notebook",
+    "home/produtos/celular",
+    "home/servicos",
+    "home/servicos/manutencao",
+    "home/servicos/consultoria",
+    "home/sobre"
+]
 
-    # cria todas as páginas
-    for pagina in estrutura:
-        bd.adicionar_pagina(pagina)
+for url in paginas:
+    bd.adicionar_pagina(url)
 
-    # cria os links internos
-    for pagina, links in estrutura.items():
-        for link in links:
-            bd.adicionar_pagina(link)
-            bd.adicionar_link(pagina, link)
 
-    bd.fechar()
-    print("Banco iniciado corretamente")
+links_internos = {
+    "home": [
+        "home/produtos",
+        "home/servicos",
+        "home/sobre"
+    ],
+    "home/produtos": [
+        "home/produtos/pc",
+        "home/produtos/notebook",
+        "home/produtos/celular"
+    ],
+    "home/servicos": [
+        "home/servicos/manutencao",
+        "home/servicos/consultoria"
+    ]
+}
 
-if __name__ == "__main__":
-    povoar()
+for pagina_pai, filhos in links_internos.items():
+    for filho in filhos:
+        bd.adicionar_link(pagina_pai, filho)
+
+
+bd.fechar()
+
+print("Banco povoado com sucesso.")
