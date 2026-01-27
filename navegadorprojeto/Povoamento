@@ -1,0 +1,32 @@
+from Banco_de_dados import GerenciadorBD
+
+def povoar():
+    bd = GerenciadorBD()
+
+    estrutura = {
+        "home": ["login", "produtos", "sobre"],
+        "login": ["recuperar-senha"],
+        "recuperar-senha": ["login"],
+        "produtos": ["produtos/pc", "produtos/notebook"],
+        "produtos/pc": ["produtos/pc/gamer", "produtos/pc/office"],
+        "produtos/pc/gamer": ["produtos"],
+        "produtos/pc/office": [],
+        "produtos/notebook": [],
+        "sobre": ["home"]
+    }
+
+    # cria todas as páginas
+    for pagina in estrutura:
+        bd.adicionar_pagina(pagina)
+
+    # cria os links internos
+    for pagina, links in estrutura.items():
+        for link in links:
+            bd.adicionar_pagina(link)
+            bd.adicionar_link(pagina, link)
+
+    bd.fechar()
+    print("Banco iniciado corretamente")
+
+if __name__ == "__main__":
+    povoar()
