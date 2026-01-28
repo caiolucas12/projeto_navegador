@@ -166,19 +166,34 @@ class Navegador:
                 print(self.historico.formatar())
             input('ENTER para continuar...')
 
-        elif cmd == '#help':  #mostra todos os comandos disponiveis
-            print('Comandos disponíveis:')
-            print('  URL             - Acessa a URL especificada')
-            print('  número          - Acessa o link interno pelo índice mostrado')
-            print('  /caminho        - Acessa o link interno relativo à página atual')
-            print('  #add url        - Adiciona uma nova página ao navegador')
-            print('  #addlink url_principal link - Adiciona um link interno a uma página existente')
-            print('  #back           - Volta para a página anterior no histórico')
-            print('  #list           - Lista todas as páginas cadastradas')
-            print('  #showhist       - Mostra o histórico de visitas')
-            print('  #help           - Mostra esta ajuda')
-            print('  #sair           - Sai do navegador')
+        elif cmd == '#help':
+            print('Comandos disponíveis:\n')
+
+            print('  URL        - Abre uma página pelo endereço informado')
+            print('    Ex: site.com\n')
+
+            print('  número     - Abre um link interno pelo número exibido')
+            print('    Ex: 1\n')
+
+            print('  /caminho   - Abre um link relativo à página atual')
+            print('    Ex: /contato\n')
+
+            print('  #add url   - (Admin) Cadastra uma nova página')
+            print('    Ex: #add site.com\n')
+
+            print('  #addlink url_principal link - (Admin) Adiciona um link interno a uma página')
+            print('    Ex: #addlink site.com/home menu\n')
+
+            print('  #back      - Volta para a página anterior\n')
+
+            print('  #list      - Lista todas as páginas cadastradas\n')
+
+            print('  #showhist  - Mostra o histórico de navegação\n')
+
+            print('  #sair      - Encerra o navegador\n')
+
             input('ENTER para continuar...')
+
 
         elif cmd == '#sair':              #sai do navegador
             print('Saindo do navegador...')
